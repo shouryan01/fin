@@ -1,4 +1,4 @@
-import { BrowserWindow, Updater } from "electrobun/bun";
+import { ApplicationMenu, BrowserWindow, Updater, Screen } from "electrobun/bun";
 
 const DEV_SERVER_PORT = 5173;
 const DEV_SERVER_URL = `http://localhost:${DEV_SERVER_PORT}`;
@@ -22,16 +22,24 @@ async function getMainViewUrl(): Promise<string> {
 
 // Create the main application window
 const url = await getMainViewUrl();
+const primaryDisplay = Screen.getPrimaryDisplay();
+const initialFrame = {
+	x: primaryDisplay.workArea.x,
+	y: primaryDisplay.workArea.y,
+	width: primaryDisplay.workArea.width,
+	height: primaryDisplay.workArea.height,
+};
+
+ApplicationMenu.setApplicationMenu([
+	{
+		submenu: [{ label: "Quit", role: "quit", accelerator: "q" }],
+	}
+]);
 
 const mainWindow = new BrowserWindow({
-	title: "React + Tailwind + Vite",
+	title: "fin",
 	url,
-	frame: {
-		width: 900,
-		height: 700,
-		x: 200,
-		y: 200,
-	},
+	frame: initialFrame,
 });
 
 console.log("React Tailwind Vite app started!");

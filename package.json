@@ -1,11 +1,11 @@
 {
-	"name": "electrobun-react-tailwind-vite",
+	"name": "fin",
 	"version": "1.0.0",
-	"description": "Electrobun app with React, Tailwind CSS, and Vite HMR",
+	"description": "Offline-only, privacy-focused personal finance tracker",
 	"scripts": {
 		"start": "vite build && electrobun dev",
 		"dev": "electrobun dev --watch",
-		"dev:hmr": "concurrently \"bun run hmr\" \"bun run start\"",
+		"go": "concurrently \"bun run hmr\" \"bun run start\"",
 		"hmr": "vite --port 5173",
 		"build:canary": "vite build && electrobun build --env=canary"
 	},

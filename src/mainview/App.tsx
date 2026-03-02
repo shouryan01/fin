@@ -7,7 +7,7 @@ function App() {
 		<div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 text-gray-900">
 			<div className="container mx-auto px-4 py-10 max-w-3xl">
 				<h1 className="text-5xl font-bold text-center text-white mb-2 drop-shadow-lg">
-					React + Tailwind + Vite
+					fin
 				</h1>
 				<p className="text-xl text-center text-white/90 mb-10">
 					A fast Electrobun app with hot module replacement
