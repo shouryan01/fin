@@ -1,6 +1,8 @@
-# React + Tailwind + Vite Electrobun Template
+# fin
 
-A fast Electrobun desktop app template with React, Tailwind CSS, and Vite for hot module replacement (HMR).
+Offline-only, privacy-focused personal finance tracker
+
+A fast and light desktop app built with Electrobun, React, Tailwind CSS, and Vite.
 
 ## Getting Started
 
