@@ -1,0 +1,28 @@
+{
+  "projectName": "fin1",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "bun",
+  "includeExamples": false,
+  "tailwind": true,
+  "addOnOptions": {
+    "drizzle": {
+      "database": "sqlite"
+    }
+  },
+  "envVarValues": {},
+  "git": false,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "biome",
+    "compiler",
+    "drizzle",
+    "shadcn",
+    "form",
+    "t3env",
+    "table",
+    "tanstack-query"
+  ]
+}

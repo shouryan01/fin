@@ -1,4 +1,9 @@
-import { ApplicationMenu, BrowserWindow, Updater, Screen } from "electrobun/bun";
+import {
+	ApplicationMenu,
+	BrowserWindow,
+	Screen,
+	Updater,
+} from "electrobun/bun";
 
 const DEV_SERVER_PORT = 5173;
 const DEV_SERVER_URL = `http://localhost:${DEV_SERVER_PORT}`;
@@ -33,10 +38,10 @@ const initialFrame = {
 ApplicationMenu.setApplicationMenu([
 	{
 		submenu: [{ label: "Quit", role: "quit", accelerator: "q" }],
-	}
+	},
 ]);
 
-const mainWindow = new BrowserWindow({
+const _mainWindow = new BrowserWindow({
 	title: "fin",
 	url,
 	frame: initialFrame,

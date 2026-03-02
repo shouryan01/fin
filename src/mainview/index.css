@@ -1,3 +1,10 @@
+/** biome-ignore-all lint/suspicious/noUnknownAtRules: tailwind is a valid at-rule */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Keep default arrow cursor while dragging custom title bar regions. */
+.electrobun-webkit-app-region-drag,
+.electrobun-webkit-app-region-drag:active {
+	cursor: default;
+}

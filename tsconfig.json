@@ -4,6 +4,11 @@
 		"useDefineForClassFields": true,
 		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
+		"baseUrl": ".",
+		"paths": {
+			"#/*": ["./src/mainview/*"],
+			"@/*": ["./src/mainview/*"]
+		},
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
@@ -16,6 +21,6 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src"],
+	"include": ["src", "env.ts"],
 	"exclude": ["node_modules", "dist", "build", "../../package/dist"]
 }
