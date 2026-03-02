@@ -40,6 +40,16 @@ const mainWindow = new BrowserWindow({
 	title: "fin",
 	url,
 	frame: initialFrame,
+	styleMask: {
+		Borderless: true,
+		Titled: false,
+		Closable: true,
+		Miniaturizable: true,
+		Resizable: true,
+		UnifiedTitleAndToolbar: true,
+		FullScreen: false,
+	},
+	titleBarStyle: "hiddenInset",
 });
 
 console.log("React Tailwind Vite app started!");
