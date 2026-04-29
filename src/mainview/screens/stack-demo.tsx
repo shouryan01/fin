@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import {
 	type ColumnDef,
 	flexRender,
@@ -10,7 +11,6 @@ import { useMemo, useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { defaultPeople, type Person } from "#/data/demo-table-data";
-import { Link } from "@tanstack/react-router";
 
 export default function StackDemo() {
 	const [people, setPeople] = useState<Person[]>(defaultPeople);
@@ -63,12 +63,12 @@ export default function StackDemo() {
 
 	return (
 		<main className="mx-auto grid max-w-5xl gap-6 px-4 py-6">
-			<section className="rounded-lg border border-slate-200 bg-white p-4">
+			<section className="rounded-lg border border-border bg-card p-4">
 				<h2 className="mb-3 text-lg font-semibold">TanStack Query</h2>
 				{statsQuery.isPending ? (
-					<p className="text-sm text-slate-500">Loading stats...</p>
-				) : (
-					<p className="text-sm text-slate-700">
+					<p className="text-sm text-muted-foreground">Loading stats...</p>
+				) : statsQuery.data ? (
+					<p className="text-sm text-foreground">
 						Users:{" "}
 						<span className="font-semibold">{statsQuery.data.users}</span> ·
 						Monthly Active:{" "}
@@ -76,13 +76,15 @@ export default function StackDemo() {
 							{statsQuery.data.monthlyActive}
 						</span>
 					</p>
+				) : (
+					<p className="text-sm text-muted-foreground">No stats available.</p>
 				)}
 			</section>
 
-			<section className="rounded-lg border border-slate-200 bg-white p-4">
+			<section className="rounded-lg border border-border bg-card p-4">
 				<Link
 					to="/test"
-					className="text-sm text-slate-700 hover:text-slate-900"
+					className="text-sm text-foreground hover:text-foreground/80"
 				>
 					Test Page
 				</Link>
@@ -156,13 +158,13 @@ export default function StackDemo() {
 				</form>
 			</section>
 
-			<section className="rounded-lg border border-slate-200 bg-white p-4">
+			<section className="rounded-lg border border-border bg-card p-4">
 				<h2 className="mb-3 text-lg font-semibold">TanStack Table</h2>
 				<div className="overflow-x-auto">
 					<table className="w-full border-collapse text-left text-sm">
 						<thead>
 							{table.getHeaderGroups().map((headerGroup) => (
-								<tr key={headerGroup.id} className="border-b border-slate-200">
+								<tr key={headerGroup.id} className="border-b border-border">
 									{headerGroup.headers.map((header) => (
 										<th key={header.id} className="px-3 py-2 font-semibold">
 											{header.isPlaceholder
@@ -178,9 +180,9 @@ export default function StackDemo() {
 						</thead>
 						<tbody>
 							{table.getRowModel().rows.map((row) => (
-								<tr key={row.id} className="border-b border-slate-100">
+								<tr key={row.id} className="border-b border-border/50">
 									{row.getVisibleCells().map((cell) => (
-										<td key={cell.id} className="px-3 py-2 text-slate-700">
+										<td key={cell.id} className="px-3 py-2 text-foreground">
 											{flexRender(
 												cell.column.columnDef.cell,
 												cell.getContext(),

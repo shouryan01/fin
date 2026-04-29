@@ -10,6 +10,7 @@
 		"includes": [
 			"src/**/*",
 			"!src/mainview/fin1",
+			"!src/mainview/routeTree.gen.ts",
 			"vite.config.ts",
 			"tsconfig.json",
 			"drizzle.config.ts"

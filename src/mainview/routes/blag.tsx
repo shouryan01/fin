@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/blag')({
-  component: RouteComponent,
-})
+export const Route = createFileRoute("/blag")({
+	component: RouteComponent,
+});
 
 function RouteComponent() {
-  return <div>Hello "/blag"!</div>
+	return <div>Hello "/blag"!</div>;
 }
