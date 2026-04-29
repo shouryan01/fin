@@ -10,54 +10,50 @@ A fast and light desktop app built with Electrobun, React, Tailwind CSS, and Vit
 # Install dependencies
 bun install
 
-# Development without HMR (uses bundled assets)
+# Start development (recommended) — runs Vite HMR + Electrobun concurrently
+bun go
+
+# Development without HMR (uses bundled assets, watch mode)
 bun run dev
 
-# Development with HMR (recommended)
-bun run dev:hmr
-
-# Build for production
-bun run build
-
-# Build for production release
-bun run build:prod
+# Build a canary release
+bun run build:canary
 ```
 
-## How HMR Works
+## How `bun go` Works
 
-When you run `bun run dev:hmr`:
+`bun go` is the recommended way to develop. It runs two processes concurrently:
 
-1. **Vite dev server** starts on `http://localhost:5173` with HMR enabled
-2. **Electrobun** starts and detects the running Vite server
-3. The app loads from the Vite dev server instead of bundled assets
-4. Changes to React components update instantly without full page reload
+1. **Vite dev server** (`bun run hmr`) starts on `http://localhost:5173` with HMR enabled
+2. **Electrobun** (`bun run start`) builds the frontend and launches the app
 
-When you run `bun run dev` (without HMR):
-
-1. Electrobun starts and loads from `views://mainview/index.html`
-2. You need to rebuild (`bun run build`) to see changes
+The app detects the running Vite server and loads from it instead of bundled assets, so React component changes update instantly without a full reload. Both processes are stopped together when you quit.
 
 ## Project Structure
 
 ```
 ├── src/
 │   ├── bun/
-│   │   └── index.ts        # Main process (Electrobun/Bun)
-│   └── mainview/
-│       ├── App.tsx         # React app component
-│       ├── main.tsx        # React entry point
-│       ├── index.html      # HTML template
-│       └── index.css       # Tailwind CSS
-├── electrobun.config.ts    # Electrobun configuration
-├── vite.config.ts          # Vite configuration
-├── tailwind.config.js      # Tailwind configuration
+│   │   ├── index.ts              # Main process (Electrobun/Bun), RPC handlers
+│   │   └── finance-service.ts    # SQLite finance data layer
+│   ├── mainview/
+│   │   ├── components/           # UI components and charts
+│   │   ├── db/                   # Drizzle ORM setup and schema
+│   │   ├── hooks/                # React hooks
+│   │   ├── lib/                  # Utilities (formatting, chart helpers)
+│   │   ├── queries/              # TanStack Query hooks (per feature)
+│   │   ├── routes/               # TanStack Router route definitions
+│   │   ├── screens/              # Full-page screen components
+│   │   ├── App.tsx               # React app root
+│   │   ├── main.tsx              # React entry point
+│   │   └── index.css             # Tailwind CSS
+│   └── shared/
+│       ├── finance.ts            # Shared types for finance data
+│       └── rpc.ts                # RPC interface definition
+├── drizzle/                      # Generated migrations
+├── assets/                       # App icons and branding
+├── electrobun.config.ts
+├── vite.config.ts
+├── tailwind.config.js
 └── package.json
 ```
-
-## Customizing
-
-- **React components**: Edit files in `src/mainview/`
-- **Tailwind theme**: Edit `tailwind.config.js`
-- **Vite settings**: Edit `vite.config.ts`
-- **Window settings**: Edit `src/bun/index.ts`
-- **App metadata**: Edit `electrobun.config.ts`
