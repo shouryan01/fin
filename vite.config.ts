@@ -8,6 +8,11 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 
 const config = defineConfig({
+  server: {
+    watch: {
+      ignored: ["**/src-tauri/**"],
+    },
+  },
   resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
