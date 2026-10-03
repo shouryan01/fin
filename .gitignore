@@ -1,0 +1,71 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production / Frontend Build Outputs
+dist/
+dist-ssr/
+build/
+.output/
+
+# Tauri & Rust
+src-tauri/target/
+target/
+src-tauri/gen/
+gen/
+.tauri/
+**/*.rs.bk
+
+# Mobile Signing Keys & Keystores (Never commit private keys)
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+
+# Framework caches
+.tanstack/
+.nitro/
+.vinxi/
+.wrangler/
+__unconfig*
+
+# Environment & Local Configuration
+.env
+.env.*
+.env.local
+*.local
+!.env.example
+
+# Database / Local storage
+todos.json
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE & Editor files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
