@@ -33,9 +33,7 @@ export function NotFound({
 					>
 						Go back
 					</Button>
-					<Button asChild>
-						<Link to="/">Go Home</Link>
-					</Button>
+					<Button render={<Link to="/" />}>Go Home</Button>
 				</div>
 			</div>
 		</div>
