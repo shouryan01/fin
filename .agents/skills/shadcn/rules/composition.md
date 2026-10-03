@@ -88,27 +88,15 @@ Chat components nest in a fixed order (`MessageScrollerProvider` → `MessageScr
 
 ---
 
-## Toast notifications follow the project base
+## Toast notifications use the `toast` component
 
-For Base UI projects, use the `toast` component:
+Use the Base UI `toast` component:
 
 ```tsx
 import { toast } from "@/components/ui/toast"
 
 toast.add({
   title: "Changes saved.",
-})
-```
-
-For Radix and React Aria projects, use Sonner:
-
-```tsx
-import { toast } from "sonner"
-
-toast.success("Changes saved.")
-toast.error("Something went wrong.")
-toast("File deleted.", {
-  action: { label: "Undo", onClick: () => undoDelete() },
 })
 ```
 

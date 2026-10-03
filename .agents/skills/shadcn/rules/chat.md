@@ -5,8 +5,7 @@ bubbles, scroll containers, dividers, or attachment cards.
 
 Install: `npx shadcn@latest add message-scroller message bubble attachment marker`
 
-The same component names and props ship for both `base` and `radix`; only
-composition differs (`render` vs `asChild`). See [base-vs-radix.md](./base-vs-radix.md).
+Composition uses the Base UI `render` prop. See [base-ui.md](./base-ui.md).
 
 ## Contents
 

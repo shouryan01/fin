@@ -168,14 +168,14 @@ Outputs resolved URLs for component documentation, examples, and API references.
 Example output for `npx shadcn@latest docs input button`:
 
 ```
-base  radix
+base  base
 
 input
-  docs      https://ui.shadcn.com/docs/components/radix/input
+  docs      https://ui.shadcn.com/docs/components/base/input
   examples  https://raw.githubusercontent.com/.../examples/input-example.tsx
 
 button
-  docs      https://ui.shadcn.com/docs/components/radix/button
+  docs      https://ui.shadcn.com/docs/components/base/button
   examples  https://raw.githubusercontent.com/.../examples/button-example.tsx
 ```
 
@@ -216,7 +216,7 @@ Displays project info and `components.json` configuration. Run this first to dis
 
 | Field                | Type      | Meaning                                                                                    |
 | -------------------- | --------- | ------------------------------------------------------------------------------------------ |
-| `base`               | `string`  | Primitive library (`radix` or `base`) — determines component APIs and available props      |
+| `base`               | `string`  | Primitive library (`base`) — determines component APIs and available props                |
 | `style`              | `string`  | Visual style (e.g. `nova`, `vega`)                                                         |
 | `rsc`                | `boolean` | RSC flag from config                                                                       |
 | `tsx`                | `boolean` | TypeScript flag                                                                            |
@@ -274,7 +274,7 @@ Three ways to specify a preset via `--preset`:
 
 1. **Named:** `--preset nova` or `--preset lyra`
 2. **Code:** `--preset a2r6bw` (version-prefixed base62 string, e.g. `a2r6bw` or `b0`)
-3. **URL:** `--preset "https://ui.shadcn.com/init?base=radix&style=nova&..."`
+3. **URL:** `--preset "https://ui.shadcn.com/init?base=base&style=nova&..."`
 
 > **IMPORTANT:** Never try to decode, fetch, or resolve preset codes manually. Preset codes are opaque — pass them directly to `npx shadcn@latest init --preset <code>` and let the CLI handle resolution.
 > Use `npx shadcn@latest apply --preset <code>` when overwriting an existing project's preset.
@@ -287,4 +287,4 @@ Ask the user first: **overwrite**, **merge**, or **skip** existing components?
 - **Merge** → `npx shadcn@latest init --preset <code> --force --no-reinstall`, then run `npx shadcn@latest info` to get the list of installed components and use the [smart merge workflow](./SKILL.md#updating-components) to update them one by one, preserving local changes. Use when the user has customized components.
 - **Skip** → `npx shadcn@latest init --preset <code> --force --no-reinstall`. Only updates config and CSS variables, leaves existing components as-is.
 
-Always run preset commands inside the user's project directory. `apply` only works in an existing project with a `components.json` file. The CLI automatically preserves the current base (`base` vs `radix`) from `components.json`. If you must use a scratch/temp directory (e.g. for `--dry-run` comparisons), pass `--base <current-base>` explicitly — preset codes do not encode the base.
+Always run preset commands inside the user's project directory. `apply` only works in an existing project with a `components.json` file. The CLI automatically preserves the current base (`base`) from `components.json`. If you must use a scratch/temp directory (e.g. for `--dry-run` comparisons), pass `--base base` explicitly — preset codes do not encode the base.

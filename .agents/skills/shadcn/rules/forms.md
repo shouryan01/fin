@@ -147,7 +147,7 @@ Combine with `Field` for labelled toggle groups:
 </Field>
 ```
 
-> **Note:** `defaultValue` and `type`/`multiple` props differ between base and radix. See [base-vs-radix.md](./base-vs-radix.md#togglegroup).
+> **Note:** Base UI uses the `multiple` boolean prop and array values for `ToggleGroup`. See [base-ui.md](./base-ui.md#togglegroup).
 
 ---
 
