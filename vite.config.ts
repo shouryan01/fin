@@ -15,7 +15,14 @@ const config = defineConfig({
 	plugins: [
 		devtools(),
 		tailwindcss(),
-		tanstackStart(),
+		tanstackStart({
+			spa: {
+				enabled: true,
+				prerender: {
+					outputPath: "/index",
+				},
+			},
+		}),
 		viteReact(),
 		babel({ presets: [reactCompilerPreset()] }),
 	],

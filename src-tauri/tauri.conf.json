@@ -2,21 +2,36 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "fin",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.shouryannikam.fin",
   "build": {
-    "frontendDist": "..",
+    "frontendDist": "../dist/client",
     "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "bun dev",
-    "beforeBuildCommand": "bun build"
+    "beforeDevCommand": "bun run dev",
+    "beforeBuildCommand": "bun run build"
   },
   "app": {
     "windows": [
       {
         "title": "fin",
-        "width": 800,
-        "height": 600,
+        "label": "main",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "center": true,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "maximized": true,
+        "visible": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": {
+          "x": 16,
+          "y": 20
+        },
+        "backgroundColor": "#090d16",
+        "acceptFirstMouse": true,
+        "shadow": true
       }
     ],
     "security": {
@@ -30,6 +45,7 @@
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
+      "icons/icon.png",
       "icons/icon.icns",
       "icons/icon.ico"
     ],

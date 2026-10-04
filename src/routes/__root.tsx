@@ -6,8 +6,12 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { AppLayout } from "../components/app-layout";
 import { NotFound } from "../components/not-found";
+import { SplashScreen } from "../components/splash-screen";
+import { TooltipProvider } from "../components/ui/tooltip";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
+import { ThemeProvider } from "../lib/theme";
 import appCss from "../styles.css?url";
 
 interface MyRouterContext {
@@ -25,13 +29,28 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "fin",
 			},
 		],
 		links: [
 			{
 				rel: "stylesheet",
 				href: appCss,
+			},
+			{
+				rel: "icon",
+				type: "image/svg+xml",
+				href: "/favicon.svg",
+			},
+			{
+				rel: "icon",
+				type: "image/x-icon",
+				href: "/favicon.ico",
+			},
+			{
+				rel: "apple-touch-icon",
+				sizes: "180x180",
+				href: "/apple-touch-icon.png",
 			},
 		],
 	}),
@@ -45,8 +64,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
-				{children}
+			<body className="h-screen w-screen overflow-hidden flex flex-col bg-background text-foreground antialiased selection:bg-primary/20">
+				<ThemeProvider>
+					<SplashScreen />
+					<TooltipProvider>
+						<AppLayout>{children}</AppLayout>
+					</TooltipProvider>
+				</ThemeProvider>
 				<TanStackDevtools
 					config={{
 						position: "bottom-right",

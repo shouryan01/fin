@@ -1,8 +1,9 @@
-import * as React from "react";
 import { cn } from "cn";
+import type * as React from "react";
 
 function Label({ className, ...props }: React.ComponentProps<"label">) {
 	return (
+		// biome-ignore lint/a11y/noLabelWithoutControl: Reusable label component receives htmlFor or input from consumer
 		<label
 			data-slot="label"
 			className={cn(
