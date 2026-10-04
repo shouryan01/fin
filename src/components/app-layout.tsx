@@ -1,17 +1,8 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 import { Monitor, Moon, Sun } from "lucide-react";
 import type * as React from "react";
 import { AppSidebar } from "#/components/app-sidebar";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "#/components/ui/breadcrumb";
 import { Button } from "#/components/ui/button";
-import { Separator } from "#/components/ui/separator";
 import {
 	SidebarInset,
 	SidebarProvider,
@@ -34,10 +25,22 @@ const pageTitles: Record<string, string> = {
 	"/settings/theme": "Customize Theme",
 };
 
+export function getPageTitle(pathname: string): string {
+	if (pathname === "/") return "Dashboard";
+	if (pathname === "/accounts" || pathname.startsWith("/accounts/"))
+		return "Accounts";
+	if (pathname === "/transactions" || pathname.startsWith("/transactions/"))
+		return "Transactions";
+	if (pathname === "/settings/theme") return "Customize Theme";
+	if (pathname === "/settings" || pathname.startsWith("/settings/"))
+		return "Settings";
+	return pageTitles[pathname] ?? "fin finance";
+}
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
 	useNavigationShortcuts();
 	const pathname = useRouterState({ select: (s) => s.location.pathname });
-	const currentPage = pageTitles[pathname] ?? "Overview";
+	const currentPage = getPageTitle(pathname);
 	const { config, toggleMode } = useTheme();
 
 	return (
@@ -46,38 +49,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 			<header
 				data-tauri-drag-region
 				style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-				className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border/50 bg-background/80 backdrop-blur-md px-3 pl-[78px] select-none z-50 transition-colors"
+				className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border/50 bg-background/80 backdrop-blur-md px-3 pl-[84px] select-none z-50 transition-colors"
 			>
 				<div className="flex items-center gap-2" data-tauri-drag-region>
-					<SidebarTrigger className="-ml-1 cursor-pointer" />
-					<Separator orientation="vertical" className="mr-1 h-4" />
-					<Breadcrumb>
-						<BreadcrumbList>
-							<BreadcrumbItem className="hidden sm:block">
-								<BreadcrumbLink render={<Link to="/" />}>
-									fin finance
-								</BreadcrumbLink>
-							</BreadcrumbItem>
-							<BreadcrumbSeparator className="hidden sm:block" />
-							{pathname === "/settings/theme" ? (
-								<>
-									<BreadcrumbItem>
-										<BreadcrumbLink render={<Link to="/settings" />}>
-											Settings
-										</BreadcrumbLink>
-									</BreadcrumbItem>
-									<BreadcrumbSeparator />
-									<BreadcrumbItem>
-										<BreadcrumbPage>Customize Theme</BreadcrumbPage>
-									</BreadcrumbItem>
-								</>
-							) : (
-								<BreadcrumbItem>
-									<BreadcrumbPage>{currentPage}</BreadcrumbPage>
-								</BreadcrumbItem>
-							)}
-						</BreadcrumbList>
-					</Breadcrumb>
+					<Tooltip>
+						<TooltipTrigger
+							render={<SidebarTrigger className="cursor-pointer" />}
+						/>
+						<TooltipContent side="bottom">Toggle Sidebar</TooltipContent>
+					</Tooltip>
+					<span className="font-heading font-semibold text-sm tracking-tight text-foreground sm:text-base select-none">
+						{currentPage}
+					</span>
 				</div>
 
 				<div className="flex items-center gap-2" data-tauri-drag-region>

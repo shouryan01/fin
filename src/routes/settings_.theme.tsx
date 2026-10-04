@@ -553,9 +553,8 @@ function ThemeCustomizerPage() {
 								)}
 							</div>
 							<CardDescription>
-								Choose from {FONTS_OPTIONS.length} fonts. Hover or focus any
-								font to preview it live. You can delete downloaded fonts
-								anytime.
+								Choose from {FONTS_OPTIONS.length} fonts. Click any font to
+								apply and download it. You can delete downloaded fonts anytime.
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="flex flex-col gap-4">
@@ -614,7 +613,6 @@ function ThemeCustomizerPage() {
 											type="button"
 											key={item.id}
 											onMouseEnter={() => {
-												loadFont(item.id);
 												setPreviewFont(item.id);
 											}}
 											onMouseLeave={() => {
@@ -623,7 +621,6 @@ function ThemeCustomizerPage() {
 												}
 											}}
 											onFocus={() => {
-												loadFont(item.id);
 												setPreviewFont(item.id);
 											}}
 											onBlur={() => {
@@ -718,7 +715,7 @@ function ThemeCustomizerPage() {
 								{filteredFonts.length === 0 && (
 									<div className="col-span-full py-8 text-center text-sm text-muted-foreground">
 										{fontFilter === "downloaded"
-											? "No downloaded Google Fonts yet. Hover or select any Google Font to download it on-demand."
+											? "No downloaded Google Fonts yet. Select any Google Font to download and apply it."
 											: `No fonts found matching "${fontSearch}"`}
 									</div>
 								)}
