@@ -49,16 +49,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 			<header
 				data-tauri-drag-region
 				style={{ WebkitAppRegion: "drag" } as React.CSSProperties}
-				className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border/50 bg-background/80 backdrop-blur-md px-3 pl-[84px] select-none z-50 transition-colors"
+				className="relative flex h-11 shrink-0 items-center justify-between gap-2 border-b border-border/50 bg-background/80 backdrop-blur-md px-3 pl-[84px] select-none z-50 transition-colors"
 			>
 				<div className="flex items-center gap-2" data-tauri-drag-region>
-					<Tooltip>
-						<TooltipTrigger
-							render={<SidebarTrigger className="cursor-pointer" />}
-						/>
-						<TooltipContent side="bottom">Toggle Sidebar</TooltipContent>
-					</Tooltip>
-					<span className="font-heading font-semibold text-sm tracking-tight text-foreground sm:text-base select-none">
+					<SidebarTrigger className="cursor-pointer md:hidden" />
+				</div>
+
+				{/* Centered Page Title */}
+				<div
+					data-tauri-drag-region
+					className="pointer-events-none absolute inset-0 flex items-center justify-center px-16"
+				>
+					<span className="font-heading font-semibold text-lg sm:text-xl tracking-tight text-foreground select-none leading-none">
 						{currentPage}
 					</span>
 				</div>
@@ -71,16 +73,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 									variant="ghost"
 									size="icon-sm"
 									onClick={toggleMode}
-									className="text-muted-foreground hover:text-foreground cursor-pointer"
+									className="group/theme text-muted-foreground hover:text-foreground cursor-pointer"
 								/>
 							}
 						>
 							{config.mode === "dark" ? (
-								<Moon />
+								<Moon className="transition-transform duration-300 ease-out group-hover/theme:-rotate-12 group-hover/theme:scale-110 group-active/theme:scale-95" />
 							) : config.mode === "system" ? (
-								<Monitor />
+								<Monitor className="transition-transform duration-200 ease-out group-hover/theme:scale-115 group-active/theme:scale-95" />
 							) : (
-								<Sun />
+								<Sun className="transition-transform duration-500 ease-out group-hover/theme:rotate-90 group-hover/theme:scale-110 group-active/theme:scale-95" />
 							)}
 							<span className="sr-only">Toggle theme</span>
 						</TooltipTrigger>

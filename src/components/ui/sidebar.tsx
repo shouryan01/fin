@@ -4,7 +4,7 @@ import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
-import { PanelLeftIcon } from "lucide-react";
+import { PanelLeft } from "lucide-react";
 import * as React from "react";
 import { Button } from "#/components/ui/button.tsx";
 import { Input } from "#/components/ui/input.tsx";
@@ -254,26 +254,54 @@ function Sidebar({
 function SidebarTrigger({
 	className,
 	onClick,
+	showTooltip = true,
+	tooltipSide,
 	...props
-}: React.ComponentProps<typeof Button>) {
-	const { toggleSidebar } = useSidebar();
+}: React.ComponentProps<typeof Button> & {
+	showTooltip?: boolean;
+	tooltipSide?: "top" | "bottom" | "left" | "right";
+}) {
+	const { toggleSidebar, state } = useSidebar();
+	const isCollapsed = state === "collapsed";
+	const label = isCollapsed ? "Open sidebar" : "Collapse sidebar";
+	const defaultSide = isCollapsed ? "right" : "bottom";
+	const side = tooltipSide ?? defaultSide;
 
-	return (
+	const triggerButton = (
 		<Button
 			data-sidebar="trigger"
 			data-slot="sidebar-trigger"
 			variant="ghost"
 			size="icon-sm"
-			className={cn(className)}
+			className={cn(
+				"group/trigger size-8 rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-all duration-200",
+				className,
+			)}
 			onClick={(event) => {
 				onClick?.(event);
 				toggleSidebar();
 			}}
 			{...props}
 		>
-			<PanelLeftIcon />
-			<span className="sr-only">Toggle Sidebar</span>
+			<PanelLeft className="size-4 group-data-[collapsible=icon]:size-[18px] transition-all duration-200" />
+			<span className="sr-only">{label}</span>
 		</Button>
+	);
+
+	if (!showTooltip) {
+		return triggerButton;
+	}
+
+	return (
+		<Tooltip>
+			<TooltipTrigger render={triggerButton} />
+			<TooltipContent side={side} align="center">
+				<div className="flex items-center gap-2">
+					<span>{label}</span>
+					<kbd data-slot="kbd">⌘B</kbd>
+				</div>
+			</TooltipContent>
+		</Tooltip>
 	);
 }
 
