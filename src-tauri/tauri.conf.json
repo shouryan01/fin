@@ -52,5 +52,12 @@
     "android": {
       "debugApplicationIdSuffix": ".debug"
     }
+  },
+  "plugins": {
+    "sql": {
+      "preload": [
+        "sqlite:fin.db"
+      ]
+    }
   }
 }

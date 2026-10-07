@@ -11,6 +11,7 @@ import { NotFound } from "../components/not-found";
 import { OnboardingModal } from "../components/onboarding-modal";
 import { SplashScreen } from "../components/splash-screen";
 import { TooltipProvider } from "../components/ui/tooltip";
+import { DatabaseProvider } from "../db";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import { ThemeProvider } from "../lib/theme";
 import appCss from "../styles.css?url";
@@ -67,11 +68,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="h-screen w-screen overflow-hidden flex flex-col bg-background text-foreground antialiased selection:bg-primary/20">
 				<ThemeProvider>
-					<SplashScreen />
-					<OnboardingModal />
-					<TooltipProvider>
-						<AppLayout>{children}</AppLayout>
-					</TooltipProvider>
+					<DatabaseProvider>
+						<SplashScreen />
+						<OnboardingModal />
+						<TooltipProvider>
+							<AppLayout>{children}</AppLayout>
+						</TooltipProvider>
+					</DatabaseProvider>
 				</ThemeProvider>
 				<TanStackDevtools
 					config={{
