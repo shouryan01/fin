@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	Activity,
 	ArrowDownRight,
@@ -6,6 +6,8 @@ import {
 	CreditCard,
 	DollarSign,
 	Eye,
+	FileSpreadsheet,
+	Inbox,
 	Maximize2,
 	Move,
 	SlidersHorizontal,
@@ -29,6 +31,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
+import { useOnboardingSettings } from "#/lib/onboarding";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -64,6 +67,9 @@ const transactions = [
 ];
 
 function Home() {
+	const { settings } = useOnboardingSettings();
+	const hasSampleData = settings.loadSampleData;
+
 	return (
 		<div className="flex-1 p-6 lg:p-8 flex flex-col gap-6 max-w-7xl mx-auto w-full">
 			{/* Top greeting & actions bar */}
@@ -77,9 +83,16 @@ function Home() {
 							<Sparkles data-icon="inline-start" />
 							Desktop v0.1
 						</Badge>
+						{!hasSampleData && (
+							<Badge variant="outline" className="text-xs font-normal">
+								Clean Ledger
+							</Badge>
+						)}
 					</div>
 					<p className="text-sm text-muted-foreground">
-						Welcome back to your financial command center.
+						{hasSampleData
+							? "Welcome back to your financial command center."
+							: "Your clean ledger is ready for new accounts and transactions."}
 					</p>
 				</div>
 
@@ -115,12 +128,18 @@ function Home() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							$48,290.40
+							{hasSampleData ? "$48,290.40" : "$0.00"}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
-							<ArrowUpRight className="size-3.5 text-primary" />
-							<span className="font-medium text-foreground">+12.4%</span>
-							<span>from last month</span>
+							{hasSampleData ? (
+								<>
+									<ArrowUpRight className="size-3.5 text-primary" />
+									<span className="font-medium text-foreground">+12.4%</span>
+									<span>from last month</span>
+								</>
+							) : (
+								<span>No transactions yet</span>
+							)}
 						</div>
 					</CardContent>
 				</Card>
@@ -134,12 +153,18 @@ function Home() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							$14,250.00
+							{hasSampleData ? "$14,250.00" : "$0.00"}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
-							<ArrowUpRight className="size-3.5 text-primary" />
-							<span className="font-medium text-foreground">+4.2%</span>
-							<span>projected</span>
+							{hasSampleData ? (
+								<>
+									<ArrowUpRight className="size-3.5 text-primary" />
+									<span className="font-medium text-foreground">+4.2%</span>
+									<span>projected</span>
+								</>
+							) : (
+								<span>$0.00 this month</span>
+							)}
 						</div>
 					</CardContent>
 				</Card>
@@ -153,12 +178,18 @@ function Home() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							$6,840.18
+							{hasSampleData ? "$6,840.18" : "$0.00"}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
-							<ArrowDownRight className="size-3.5 text-destructive" />
-							<span className="font-medium text-foreground">-2.1%</span>
-							<span>lower than average</span>
+							{hasSampleData ? (
+								<>
+									<ArrowDownRight className="size-3.5 text-destructive" />
+									<span className="font-medium text-foreground">-2.1%</span>
+									<span>lower than average</span>
+								</>
+							) : (
+								<span>$0.00 spent</span>
+							)}
 						</div>
 					</CardContent>
 				</Card>
@@ -172,11 +203,11 @@ function Home() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							4 Accounts
+							{hasSampleData ? "4 Accounts" : "0 Accounts"}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
 							<Activity className="size-3.5 text-primary" />
-							<span>All synchronized</span>
+							<span>{hasSampleData ? "All synchronized" : "Ledger empty"}</span>
 						</div>
 					</CardContent>
 				</Card>
@@ -220,35 +251,69 @@ function Home() {
 				</CardHeader>
 
 				<CardContent className="p-0">
-					<div className="divide-y divide-border">
-						{transactions.map((item) => (
-							<div
-								key={item.name}
-								className="flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-muted/40"
-							>
-								<div className="flex items-center gap-3">
-									<div className="size-8 rounded-lg flex items-center justify-center bg-muted text-muted-foreground">
-										{item.positive ? (
-											<ArrowUpRight className="size-4 text-primary" />
-										) : (
-											<ArrowDownRight className="size-4" />
-										)}
-									</div>
-									<div>
-										<div className="text-xs font-medium text-foreground">
-											{item.name}
+					{hasSampleData ? (
+						<div className="divide-y divide-border">
+							{transactions.map((item) => (
+								<div
+									key={item.name}
+									className="flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-muted/40"
+								>
+									<div className="flex items-center gap-3">
+										<div className="size-8 rounded-lg flex items-center justify-center bg-muted text-muted-foreground">
+											{item.positive ? (
+												<ArrowUpRight className="size-4 text-primary" />
+											) : (
+												<ArrowDownRight className="size-4" />
+											)}
 										</div>
-										<div className="text-[11px] text-muted-foreground">
-											{item.date} · {item.category}
+										<div>
+											<div className="text-xs font-medium text-foreground">
+												{item.name}
+											</div>
+											<div className="text-[11px] text-muted-foreground">
+												{item.date} · {item.category}
+											</div>
 										</div>
 									</div>
+									<Badge variant={item.positive ? "secondary" : "outline"}>
+										{item.amount}
+									</Badge>
 								</div>
-								<Badge variant={item.positive ? "secondary" : "outline"}>
-									{item.amount}
-								</Badge>
+							))}
+						</div>
+					) : (
+						<div className="flex flex-col items-center justify-center py-12 px-6 text-center gap-3">
+							<div className="size-12 rounded-2xl bg-muted/60 text-muted-foreground flex items-center justify-center border border-border/60">
+								<Inbox className="size-6 text-muted-foreground" />
 							</div>
-						))}
-					</div>
+							<div className="flex flex-col gap-1 max-w-sm">
+								<span className="text-sm font-semibold text-foreground">
+									No transactions recorded yet
+								</span>
+								<p className="text-xs text-muted-foreground">
+									Download a CSV from your bank and drag it into fin, or load
+									sample data from settings to explore the dashboard with
+									realistic numbers.
+								</p>
+							</div>
+							<div className="flex items-center gap-2 mt-2">
+								<Button size="sm" variant="outline" className="cursor-pointer">
+									<FileSpreadsheet
+										data-icon="inline-start"
+										className="size-3.5"
+									/>
+									Import CSV
+								</Button>
+								<Button
+									size="sm"
+									render={<Link to="/settings" />}
+									className="cursor-pointer"
+								>
+									Open Settings
+								</Button>
+							</div>
+						</div>
+					)}
 				</CardContent>
 			</Card>
 		</div>

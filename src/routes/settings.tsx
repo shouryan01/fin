@@ -33,6 +33,7 @@ import {
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
 import { Switch } from "#/components/ui/switch";
+import { replayOnboarding, useOnboardingSettings } from "#/lib/onboarding";
 import {
 	MAX_SPLASH_DURATION,
 	MIN_SPLASH_DURATION,
@@ -60,6 +61,8 @@ function SettingsPage() {
 		resetDuration: resetSplashDuration,
 		preview: previewSplash,
 	} = useSplashSettings();
+	const { settings: onboardingSettings, setSampleData } =
+		useOnboardingSettings();
 	const [hasCopied, setHasCopied] = React.useState(false);
 
 	const activeThemeColor =
@@ -424,7 +427,128 @@ function SettingsPage() {
 					</CardFooter>
 				</Card>
 
-				{/* 3. Preferences & Regional */}
+				{/* 3. Onboarding & Guided Tour */}
+				<Card>
+					<CardHeader>
+						<div className="flex flex-col gap-1">
+							<CardTitle className="text-base flex items-center gap-2">
+								<Sparkles className="size-4 text-primary" />
+								Onboarding & Guided Tour
+							</CardTitle>
+							<CardDescription>
+								Review the introductory tour, learn how bank imports work, or
+								configure default expense categories and demo data.
+							</CardDescription>
+						</div>
+						<CardAction>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => replayOnboarding(0)}
+								title="Replay introductory onboarding tour"
+							>
+								<RotateCcw data-icon="inline-start" className="size-3.5" />
+								Replay Onboarding
+							</Button>
+						</CardAction>
+					</CardHeader>
+					<CardContent className="flex flex-col gap-5">
+						{/* Replay action row */}
+						<div className="flex items-center justify-between p-3 rounded-xl border border-border/60 bg-muted/20">
+							<div className="flex flex-col gap-0.5">
+								<span className="text-xs font-semibold text-foreground">
+									Interactive App Walkthrough
+								</span>
+								<span className="text-[11px] text-muted-foreground">
+									Restart the 5-step tour covering CSV imports, monthly
+									dashboard, categories, and demo data.
+								</span>
+							</div>
+							<Button
+								size="sm"
+								onClick={() => replayOnboarding(0)}
+								className="shrink-0 cursor-pointer"
+							>
+								<Play data-icon="inline-start" className="size-3.5" />
+								Launch Tour
+							</Button>
+						</div>
+
+						{/* Sample Data Toggle */}
+						<div className="flex items-center justify-between p-3 rounded-xl border border-border/60 bg-muted/20">
+							<div className="flex flex-col gap-0.5">
+								<span className="text-xs font-semibold text-foreground">
+									Load Demo Sample Data
+								</span>
+								<span className="text-[11px] text-muted-foreground">
+									Populate accounts and transactions with realistic numbers.
+									Turn off to start with a blank ledger.
+								</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<Badge
+									variant={
+										onboardingSettings.loadSampleData ? "default" : "secondary"
+									}
+									className="text-xs font-medium"
+								>
+									{onboardingSettings.loadSampleData
+										? "Sample Data Active"
+										: "Clean Slate"}
+								</Badge>
+								<Switch
+									checked={onboardingSettings.loadSampleData}
+									onCheckedChange={(checked) => setSampleData(checked)}
+								/>
+							</div>
+						</div>
+
+						{/* Active Categories Summary */}
+						<div className="flex flex-col gap-2">
+							<div className="flex items-center justify-between">
+								<span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+									Active Categories ({onboardingSettings.categories.length})
+								</span>
+								<Button
+									variant="ghost"
+									size="xs"
+									onClick={() => replayOnboarding(3)}
+									className="text-xs text-primary hover:text-primary cursor-pointer"
+								>
+									Manage in tour
+								</Button>
+							</div>
+							<div className="flex flex-wrap gap-1.5">
+								{onboardingSettings.categories.map((cat) => (
+									<Badge
+										key={cat}
+										variant="outline"
+										className="text-xs font-normal bg-background/60"
+									>
+										{cat}
+									</Badge>
+								))}
+							</div>
+						</div>
+					</CardContent>
+					<CardFooter className="bg-muted/30 border-t border-border/40 py-3 px-6 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between text-xs text-muted-foreground">
+						<span>
+							You can restart the tour anytime without losing your saved custom
+							categories.
+						</span>
+						<Button
+							variant="outline"
+							size="sm"
+							className="shrink-0"
+							onClick={() => replayOnboarding(0)}
+						>
+							<RotateCcw data-icon="inline-start" className="size-3.5" />
+							Restart Tour
+						</Button>
+					</CardFooter>
+				</Card>
+
+				{/* 4. Preferences & Regional */}
 				<Card>
 					<CardHeader>
 						<CardTitle className="text-base flex items-center gap-2">

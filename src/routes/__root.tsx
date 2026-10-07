@@ -8,6 +8,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { AppLayout } from "../components/app-layout";
 import { NotFound } from "../components/not-found";
+import { OnboardingModal } from "../components/onboarding-modal";
 import { SplashScreen } from "../components/splash-screen";
 import { TooltipProvider } from "../components/ui/tooltip";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -67,6 +68,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body className="h-screen w-screen overflow-hidden flex flex-col bg-background text-foreground antialiased selection:bg-primary/20">
 				<ThemeProvider>
 					<SplashScreen />
+					<OnboardingModal />
 					<TooltipProvider>
 						<AppLayout>{children}</AppLayout>
 					</TooltipProvider>
