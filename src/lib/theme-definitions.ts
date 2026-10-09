@@ -250,6 +250,24 @@ export const BASE_COLORS: Record<string, DualModeVars> = {
 };
 
 export const THEME_COLORS: Record<string, DualModeVars> = {
+	fin: {
+		light: {
+			primary: "oklch(0.58 0.20 259.8)",
+			"primary-foreground": "oklch(0.985 0.008 255)",
+			accent: "oklch(0.58 0.20 259.8)",
+			"accent-foreground": "oklch(0.985 0.008 255)",
+			"sidebar-primary": "oklch(0.623 0.188 259.815)",
+			"sidebar-primary-foreground": "oklch(0.985 0.008 255)",
+		},
+		dark: {
+			primary: "oklch(0.623 0.188 259.815)",
+			"primary-foreground": "oklch(0.985 0.008 255)",
+			accent: "oklch(0.623 0.188 259.815)",
+			"accent-foreground": "oklch(0.985 0.008 255)",
+			"sidebar-primary": "oklch(0.623 0.188 259.815)",
+			"sidebar-primary-foreground": "oklch(0.985 0.008 255)",
+		},
+	},
 	sky: {
 		light: {
 			primary: "oklch(0.5 0.134 242.749)",
@@ -685,6 +703,22 @@ export const THEME_COLORS: Record<string, DualModeVars> = {
 };
 
 export const CHART_COLORS: Record<string, DualModeVars> = {
+	fin: {
+		light: {
+			"chart-1": "oklch(0.623 0.188 259.815)",
+			"chart-2": "oklch(0.546 0.245 262.881)",
+			"chart-3": "oklch(0.72 0.15 255)",
+			"chart-4": "oklch(0.488 0.243 264.376)",
+			"chart-5": "oklch(0.809 0.105 251.813)",
+		},
+		dark: {
+			"chart-1": "oklch(0.623 0.188 259.815)",
+			"chart-2": "oklch(0.72 0.15 255)",
+			"chart-3": "oklch(0.546 0.245 262.881)",
+			"chart-4": "oklch(0.809 0.105 251.813)",
+			"chart-5": "oklch(0.488 0.243 264.376)",
+		},
+	},
 	sky: {
 		light: {
 			"chart-1": "oklch(0.828 0.111 230.318)",

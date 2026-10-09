@@ -3,6 +3,7 @@ import {
 	ArrowLeftRight,
 	ArrowRightLeft,
 	LayoutDashboard,
+	LayoutGrid,
 	PanelLeftOpen,
 	Settings,
 	Wallet,
@@ -38,7 +39,8 @@ const navItems = [
 		shortcut: "⌘1",
 		renderIcon: () => (
 			<span className="relative flex size-4 shrink-0 items-center justify-center group-data-[collapsible=icon]:size-[18px]">
-				<LayoutDashboard className="size-full shrink-0 transition-all duration-300 ease-out group-hover/menu-button:rotate-12 group-hover/menu-button:scale-110 group-active/menu-button:scale-95" />
+				<LayoutDashboard className="size-full shrink-0 transition-all duration-300 ease-out group-hover/menu-button:opacity-0 group-hover/menu-button:scale-75" />
+				<LayoutGrid className="size-full shrink-0 absolute inset-0 m-auto transition-all duration-300 ease-out opacity-0 scale-75 group-hover/menu-button:opacity-100 group-hover/menu-button:scale-110" />
 			</span>
 		),
 	},
@@ -50,7 +52,7 @@ const navItems = [
 		renderIcon: () => (
 			<span className="relative flex size-4 shrink-0 items-center justify-center group-data-[collapsible=icon]:size-[18px]">
 				<Wallet className="size-full shrink-0 transition-all duration-300 ease-out group-hover/menu-button:opacity-0 group-hover/menu-button:scale-75 group-hover/menu-button:-rotate-12" />
-				<WalletCards className="size-full shrink-0 absolute inset-0 m-auto text-primary transition-all duration-300 ease-out opacity-0 scale-75 rotate-12 group-hover/menu-button:opacity-100 group-hover/menu-button:scale-110 group-hover/menu-button:rotate-0" />
+				<WalletCards className="size-full shrink-0 absolute inset-0 m-auto transition-all duration-300 ease-out opacity-0 scale-75 rotate-12 group-hover/menu-button:opacity-100 group-hover/menu-button:scale-110 group-hover/menu-button:rotate-0" />
 			</span>
 		),
 	},
@@ -62,7 +64,7 @@ const navItems = [
 		renderIcon: () => (
 			<span className="relative flex size-4 shrink-0 items-center justify-center group-data-[collapsible=icon]:size-[18px]">
 				<ArrowLeftRight className="size-full shrink-0 transition-all duration-300 ease-out group-hover/menu-button:opacity-0 group-hover/menu-button:scale-75" />
-				<ArrowRightLeft className="size-full shrink-0 absolute inset-0 m-auto text-primary transition-all duration-300 ease-out opacity-0 scale-75 group-hover/menu-button:opacity-100 group-hover/menu-button:scale-110" />
+				<ArrowRightLeft className="size-full shrink-0 absolute inset-0 m-auto transition-all duration-300 ease-out opacity-0 scale-75 group-hover/menu-button:opacity-100 group-hover/menu-button:scale-110" />
 			</span>
 		),
 	},
@@ -79,10 +81,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 				<div className="flex items-center justify-between w-full group-data-[collapsible=icon]:hidden">
 					<Link
 						to="/"
-						className="group/logo flex items-center gap-2.5 px-1 py-1 outline-hidden rounded-md hover:bg-sidebar-accent/50 transition-colors min-w-0"
+						className="group/logo group-logo flex items-center gap-2.5 px-1 py-1 outline-hidden rounded-md min-w-0"
 						title="Dashboard"
 					>
-						<FinLogo className="size-11 shrink-0 shadow-xs transition-transform duration-300 ease-out group-hover/logo:scale-105 group-hover/logo:-rotate-3" />
+						<FinLogo className="size-11 shrink-0 shadow-xs" />
 						<span className="font-bold text-lg tracking-tight text-foreground truncate">
 							fin
 						</span>

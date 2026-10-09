@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "0df88796-df8d-470f-8d9e-463e111d0e84",
+  "id": "59dcaee5-3bae-4e6c-bef1-c2ccfa5ffb89",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account_balance_snapshots": {
@@ -261,7 +261,15 @@
           "default": "(unixepoch())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "transaction_import_mappings_account_id_idx": {
+          "name": "transaction_import_mappings_account_id_idx",
+          "columns": [
+            "account_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "transaction_import_mappings_account_id_accounts_id_fk": {
           "name": "transaction_import_mappings_account_id_accounts_id_fk",
@@ -369,7 +377,15 @@
           "default": "(unixepoch())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "transaction_imports_account_id_idx": {
+          "name": "transaction_imports_account_id_idx",
+          "columns": [
+            "account_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "transaction_imports_account_id_accounts_id_fk": {
           "name": "transaction_imports_account_id_accounts_id_fk",
@@ -430,7 +446,15 @@
           "default": "(unixepoch())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "transaction_rules_category_id_idx": {
+          "name": "transaction_rules_category_id_idx",
+          "columns": [
+            "category_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "transaction_rules_category_id_categories_id_fk": {
           "name": "transaction_rules_category_id_categories_id_fk",
@@ -571,6 +595,34 @@
         }
       },
       "indexes": {
+        "transactions_account_id_idx": {
+          "name": "transactions_account_id_idx",
+          "columns": [
+            "account_id"
+          ],
+          "isUnique": false
+        },
+        "transactions_category_id_idx": {
+          "name": "transactions_category_id_idx",
+          "columns": [
+            "category_id"
+          ],
+          "isUnique": false
+        },
+        "transactions_import_id_idx": {
+          "name": "transactions_import_id_idx",
+          "columns": [
+            "import_id"
+          ],
+          "isUnique": false
+        },
+        "transactions_posted_on_idx": {
+          "name": "transactions_posted_on_idx",
+          "columns": [
+            "posted_on"
+          ],
+          "isUnique": false
+        },
         "transactions_external_hash_idx": {
           "name": "transactions_external_hash_idx",
           "columns": [

@@ -1,3 +1,5 @@
+mod db_proxy;
+
 use tauri::Manager;
 use tauri_plugin_sql::{Migration, MigrationKind};
 
@@ -18,6 +20,10 @@ pub fn run() {
         .add_migrations("sqlite:fin.db", migrations)
         .build(),
     )
+    .invoke_handler(tauri::generate_handler![
+      db_proxy::proxy_query,
+      db_proxy::proxy_batch
+    ])
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(

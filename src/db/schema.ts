@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+	index,
 	integer,
 	sqliteTable,
 	text,
@@ -34,23 +35,33 @@ export const categories = sqliteTable("categories", {
 		.default(sql`(unixepoch())`),
 });
 
-export const transactionImports = sqliteTable("transaction_imports", {
-	id: text().primaryKey(),
-	accountId: text("account_id")
-		.notNull()
-		.references(() => accounts.id, { onDelete: "cascade" }),
-	sourceName: text("source_name").notNull(),
-	rowCount: integer("row_count").notNull().default(0),
-	importedCount: integer("imported_count").notNull().default(0),
-	duplicateCount: integer("duplicate_count").notNull().default(0),
-	skippedCount: integer("skipped_count").notNull().default(0),
-	createdSnapshotCount: integer("created_snapshot_count").notNull().default(0),
-	undoVersion: integer("undo_version").notNull().default(0),
-	mappingJson: text("mapping_json"),
-	createdAt: integer("created_at", { mode: "number" })
-		.notNull()
-		.default(sql`(unixepoch())`),
-});
+export const transactionImports = sqliteTable(
+	"transaction_imports",
+	{
+		id: text().primaryKey(),
+		accountId: text("account_id")
+			.notNull()
+			.references(() => accounts.id, { onDelete: "cascade" }),
+		sourceName: text("source_name").notNull(),
+		rowCount: integer("row_count").notNull().default(0),
+		importedCount: integer("imported_count").notNull().default(0),
+		duplicateCount: integer("duplicate_count").notNull().default(0),
+		skippedCount: integer("skipped_count").notNull().default(0),
+		createdSnapshotCount: integer("created_snapshot_count")
+			.notNull()
+			.default(0),
+		undoVersion: integer("undo_version").notNull().default(0),
+		mappingJson: text("mapping_json"),
+		createdAt: integer("created_at", { mode: "number" })
+			.notNull()
+			.default(sql`(unixepoch())`),
+	},
+	(table) => ({
+		accountIdIdx: index("transaction_imports_account_id_idx").on(
+			table.accountId,
+		),
+	}),
+);
 
 export const transactionImportMappings = sqliteTable(
 	"transaction_import_mappings",
@@ -65,19 +76,32 @@ export const transactionImportMappings = sqliteTable(
 			.notNull()
 			.default(sql`(unixepoch())`),
 	},
+	(table) => ({
+		accountIdIdx: index("transaction_import_mappings_account_id_idx").on(
+			table.accountId,
+		),
+	}),
 );
 
-export const transactionRules = sqliteTable("transaction_rules", {
-	id: text().primaryKey(),
-	merchantPattern: text("merchant_pattern").notNull(),
-	categoryId: text("category_id").references(() => categories.id, {
-		onDelete: "set null",
+export const transactionRules = sqliteTable(
+	"transaction_rules",
+	{
+		id: text().primaryKey(),
+		merchantPattern: text("merchant_pattern").notNull(),
+		categoryId: text("category_id").references(() => categories.id, {
+			onDelete: "set null",
+		}),
+		priority: integer().notNull().default(0),
+		createdAt: integer("created_at", { mode: "number" })
+			.notNull()
+			.default(sql`(unixepoch())`),
+	},
+	(table) => ({
+		categoryIdIdx: index("transaction_rules_category_id_idx").on(
+			table.categoryId,
+		),
 	}),
-	priority: integer().notNull().default(0),
-	createdAt: integer("created_at", { mode: "number" })
-		.notNull()
-		.default(sql`(unixepoch())`),
-});
+);
 
 export const transactions = sqliteTable(
 	"transactions",
@@ -112,6 +136,10 @@ export const transactions = sqliteTable(
 			.default(sql`(unixepoch())`),
 	},
 	(table) => ({
+		accountIdIdx: index("transactions_account_id_idx").on(table.accountId),
+		categoryIdIdx: index("transactions_category_id_idx").on(table.categoryId),
+		importIdIdx: index("transactions_import_id_idx").on(table.importId),
+		postedOnIdx: index("transactions_posted_on_idx").on(table.postedOn),
 		externalHashIdx: uniqueIndex("transactions_external_hash_idx").on(
 			table.externalHash,
 		),

@@ -289,7 +289,7 @@ function ThemeCustomizerPage() {
 							</CardTitle>
 							<CardDescription>
 								Primary brand color used for buttons, links, active states, and
-								focus accents (17 official themes).
+								focus accents.
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -373,7 +373,7 @@ function ThemeCustomizerPage() {
 							</CardTitle>
 							<CardDescription>
 								Lead color palette applied across metrics, graphs, and data
-								visualizations (17 official palettes).
+								visualizations.
 							</CardDescription>
 						</CardHeader>
 						<CardContent>

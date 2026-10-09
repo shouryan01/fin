@@ -13,8 +13,8 @@ export interface ThemeConfig {
 
 export const DEFAULT_THEME_CONFIG: ThemeConfig = {
 	baseColor: "mist",
-	theme: "sky",
-	chartColor: "blue",
+	theme: "fin",
+	chartColor: "fin",
 	font: "geist",
 	radius: "default",
 	menuAccent: "subtle",
@@ -44,6 +44,7 @@ export const BASE_COLORS_OPTIONS: OptionItem[] = [
 
 // All 17 official color themes from ui.shadcn.com/create
 export const THEME_COLORS_OPTIONS: OptionItem[] = [
+	{ id: "fin", name: "Fin", color: "#3b82f6" },
 	{ id: "sky", name: "Sky", color: "#0ea5e9" },
 	{ id: "blue", name: "Blue", color: "#3b82f6" },
 	{ id: "violet", name: "Violet", color: "#8b5cf6" },
@@ -63,8 +64,9 @@ export const THEME_COLORS_OPTIONS: OptionItem[] = [
 	{ id: "indigo", name: "Indigo", color: "#6366f1" },
 ];
 
-// All 17 official chart color presets matching ui.shadcn.com/create
+// All official chart color presets matching ui.shadcn.com/create plus Fin
 export const CHART_COLORS_OPTIONS: OptionItem[] = [
+	{ id: "fin", name: "Fin", color: "#3b82f6" },
 	{ id: "sky", name: "Sky", color: "#0ea5e9" },
 	{ id: "blue", name: "Blue", color: "#3b82f6" },
 	{ id: "violet", name: "Violet", color: "#8b5cf6" },
@@ -452,6 +454,7 @@ const PRESET_THEMES = [
 	"olive",
 	"mist",
 	"taupe",
+	"fin",
 ];
 const PRESET_ICON_LIBRARIES = [
 	"lucide",
@@ -568,8 +571,8 @@ export function encodePresetCode(config: Partial<ThemeConfig>): string {
 	const data: Record<string, string> = {
 		style: "luma",
 		baseColor: config.baseColor ?? "mist",
-		theme: config.theme ?? "sky",
-		chartColor: config.chartColor ?? "blue",
+		theme: config.theme ?? "fin",
+		chartColor: config.chartColor ?? "fin",
 		iconLibrary: "lucide",
 		font: config.font === "jakarta" ? "inter" : (config.font ?? "geist"),
 		fontHeading: "inherit",
@@ -628,8 +631,10 @@ export function applyTheme(config: ThemeConfig): void {
 
 	if (isDark) {
 		root.classList.add("dark");
+		root.style.colorScheme = "dark";
 	} else {
 		root.classList.remove("dark");
+		root.style.colorScheme = "light";
 	}
 
 	const modeKey = isDark ? "dark" : "light";
@@ -643,7 +648,8 @@ export function applyTheme(config: ThemeConfig): void {
 	}
 
 	// 2. Theme colors (primary, accent, sidebar-primary, etc.)
-	const themeEntry = THEME_COLORS[config.theme] ?? THEME_COLORS.sky;
+	const themeEntry =
+		THEME_COLORS[config.theme] ?? THEME_COLORS.fin ?? THEME_COLORS.sky;
 	if (themeEntry?.[modeKey]) {
 		for (const [key, val] of Object.entries(themeEntry[modeKey])) {
 			root.style.setProperty(`--${key}`, val);
@@ -679,7 +685,8 @@ export function applyTheme(config: ThemeConfig): void {
 	root.setAttribute("data-menu-accent", config.menuAccent ?? "subtle");
 
 	// 3. Chart colors
-	const chartEntry = CHART_COLORS[config.chartColor] ?? CHART_COLORS.blue;
+	const chartEntry =
+		CHART_COLORS[config.chartColor] ?? CHART_COLORS.fin ?? CHART_COLORS.blue;
 	if (chartEntry?.[modeKey]) {
 		for (const [key, val] of Object.entries(chartEntry[modeKey])) {
 			root.style.setProperty(`--${key}`, val);
@@ -710,6 +717,13 @@ export function getStoredThemeConfig(): ThemeConfig {
 		const raw = localStorage.getItem("fin-theme-config");
 		if (raw) {
 			const parsed = JSON.parse(raw);
+			// Automatically migrate legacy default "sky" to "fin"
+			if (parsed.theme === "sky") {
+				parsed.theme = "fin";
+			}
+			if (parsed.chartColor === "sky") {
+				parsed.chartColor = "fin";
+			}
 			return { ...DEFAULT_THEME_CONFIG, ...parsed };
 		}
 	} catch {
