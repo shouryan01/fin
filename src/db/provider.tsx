@@ -1,6 +1,8 @@
 import { AlertCircle, RefreshCw } from "lucide-react";
 import * as React from "react";
+import { getStoredOnboardingSettings } from "#/lib/onboarding";
 import { initDatabase, isTauriEnvironment } from "./client";
+import { seedSampleData } from "./sample-data";
 
 interface DatabaseContextValue {
 	isReady: boolean;
@@ -26,7 +28,19 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
 		}
 
 		initDatabase()
-			.then((res) => {
+			.then(async (res) => {
+				const settings = getStoredOnboardingSettings();
+				if (res.accountCount === 0 && settings.loadSampleData) {
+					try {
+						await seedSampleData();
+						if (process.env.NODE_ENV !== "production") {
+							console.info("[Database] Seeded initial demo sample data.");
+						}
+					} catch (seedErr) {
+						console.error("[Database] Failed to seed sample data:", seedErr);
+					}
+				}
+
 				if (process.env.NODE_ENV !== "production") {
 					console.info(
 						`[Database] SQLite connected. Found ${res.accountCount} accounts.`,

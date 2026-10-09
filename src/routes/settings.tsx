@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	Bell,
@@ -8,6 +9,7 @@ import {
 	DollarSign,
 	Keyboard,
 	Laptop,
+	Loader2,
 	Monitor,
 	Moon,
 	Palette,
@@ -33,6 +35,7 @@ import {
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
 import { Switch } from "#/components/ui/switch";
+import { clearSampleData, seedSampleData } from "#/db";
 import { replayOnboarding, useOnboardingSettings } from "#/lib/onboarding";
 import {
 	MAX_SPLASH_DURATION,
@@ -63,6 +66,29 @@ function SettingsPage() {
 	} = useSplashSettings();
 	const { settings: onboardingSettings, setSampleData } =
 		useOnboardingSettings();
+	const queryClient = useQueryClient();
+	const [isTogglingSampleData, setIsTogglingSampleData] = React.useState(false);
+
+	const handleToggleSampleData = React.useCallback(
+		async (checked: boolean) => {
+			setIsTogglingSampleData(true);
+			setSampleData(checked);
+			try {
+				if (checked) {
+					await seedSampleData({ force: true });
+				} else {
+					await clearSampleData();
+				}
+				await queryClient.invalidateQueries();
+			} catch (err) {
+				console.error("[Settings] Failed to toggle sample data:", err);
+			} finally {
+				setIsTogglingSampleData(false);
+			}
+		},
+		[setSampleData, queryClient],
+	);
+
 	const [hasCopied, setHasCopied] = React.useState(false);
 
 	const activeThemeColor =
@@ -492,13 +518,21 @@ function SettingsPage() {
 									}
 									className="text-xs font-medium"
 								>
-									{onboardingSettings.loadSampleData
-										? "Sample Data Active"
-										: "Clean Slate"}
+									{isTogglingSampleData ? (
+										<span className="flex items-center gap-1">
+											<Loader2 className="size-3 animate-spin" />
+											Updating...
+										</span>
+									) : onboardingSettings.loadSampleData ? (
+										"Sample Data Active"
+									) : (
+										"Clean Slate"
+									)}
 								</Badge>
 								<Switch
 									checked={onboardingSettings.loadSampleData}
-									onCheckedChange={(checked) => setSampleData(checked)}
+									disabled={isTogglingSampleData}
+									onCheckedChange={handleToggleSampleData}
 								/>
 							</div>
 						</div>

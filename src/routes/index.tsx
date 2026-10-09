@@ -1,4 +1,6 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { desc } from "drizzle-orm";
 import {
 	Activity,
 	ArrowDownRight,
@@ -8,12 +10,14 @@ import {
 	Eye,
 	FileSpreadsheet,
 	Inbox,
+	Loader2,
 	Maximize2,
 	Move,
 	SlidersHorizontal,
 	Sparkles,
 	Wallet,
 } from "lucide-react";
+import * as React from "react";
 import { triggerSplashPreview } from "#/components/splash-screen";
 import {
 	Alert,
@@ -31,44 +35,106 @@ import {
 	CardHeader,
 	CardTitle,
 } from "#/components/ui/card";
+import {
+	accountBalanceSnapshots,
+	accounts,
+	categories,
+	db,
+	seedSampleData,
+	transactions,
+	useDatabase,
+} from "#/db";
 import { useOnboardingSettings } from "#/lib/onboarding";
 
 export const Route = createFileRoute("/")({ component: Home });
 
-const transactions = [
-	{
-		name: "Apple Developer Program",
-		date: "Today, 2:15 PM",
-		category: "Subscriptions",
-		amount: "-$99.00",
-		positive: false,
-	},
-	{
-		name: "Client Payment · Invoice #1042",
-		date: "Yesterday, 4:30 PM",
-		category: "Income",
-		amount: "+$4,800.00",
-		positive: true,
-	},
-	{
-		name: "AWS Cloud Infrastructure",
-		date: "Oct 1, 2026",
-		category: "Servers",
-		amount: "-$342.18",
-		positive: false,
-	},
-	{
-		name: "Stripe Payout",
-		date: "Sep 28, 2026",
-		category: "Income",
-		amount: "+$6,250.00",
-		positive: true,
-	},
-];
+function formatCurrency(cents: number): string {
+	const dollars = Math.abs(cents) / 100;
+	const formatted = new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+	}).format(dollars);
+	return cents < 0 ? `-${formatted}` : formatted;
+}
+
+function formatDate(dateStr: string): string {
+	try {
+		const [year, month, day] = dateStr.split("-").map(Number);
+		const d = new Date(year, month - 1, day);
+		return d.toLocaleDateString("en-US", {
+			month: "short",
+			day: "numeric",
+		});
+	} catch {
+		return dateStr;
+	}
+}
 
 function Home() {
-	const { settings } = useOnboardingSettings();
-	const hasSampleData = settings.loadSampleData;
+	const { isReady } = useDatabase();
+	const queryClient = useQueryClient();
+	const { setSampleData } = useOnboardingSettings();
+	const [isSeeding, setIsSeeding] = React.useState(false);
+
+	const { data: dashboardData, isLoading } = useQuery({
+		queryKey: ["dashboard-summary"],
+		queryFn: async () => {
+			const accList = await db.select().from(accounts);
+			const snapshots = await db.select().from(accountBalanceSnapshots);
+			const txList = await db
+				.select()
+				.from(transactions)
+				.orderBy(desc(transactions.postedOn));
+			const catList = await db.select().from(categories);
+
+			const snapshotMap = new Map<string, number>();
+			for (const s of snapshots) {
+				snapshotMap.set(s.accountId, s.balanceCents);
+			}
+
+			const catMap = new Map(catList.map((c) => [c.id, c]));
+
+			const totalBalanceCents = accList
+				.filter((a) => a.includeInNetWorth && !a.archived)
+				.reduce((acc, a) => acc + (snapshotMap.get(a.id) ?? 0), 0);
+
+			const monthlyInflowCents = txList
+				.filter((t) => t.amountCents > 0)
+				.reduce((acc, t) => acc + t.amountCents, 0);
+
+			const monthlyOutflowCents = txList
+				.filter((t) => t.amountCents < 0)
+				.reduce((acc, t) => acc + Math.abs(t.amountCents), 0);
+
+			return {
+				accounts: accList,
+				totalBalanceCents,
+				monthlyInflowCents,
+				monthlyOutflowCents,
+				recentTransactions: txList.slice(0, 6).map((t) => ({
+					...t,
+					category: t.categoryId ? catMap.get(t.categoryId) : undefined,
+				})),
+			};
+		},
+		enabled: isReady,
+	});
+
+	const handleSeedSampleData = async () => {
+		setIsSeeding(true);
+		setSampleData(true);
+		try {
+			await seedSampleData({ force: true });
+			await queryClient.invalidateQueries();
+		} catch (err) {
+			console.error("Failed to seed sample data:", err);
+		} finally {
+			setIsSeeding(false);
+		}
+	};
+
+	const hasAccounts = (dashboardData?.accounts.length ?? 0) > 0;
+	const recentTransactions = dashboardData?.recentTransactions ?? [];
 
 	return (
 		<div className="flex-1 p-6 lg:p-8 flex flex-col gap-6 max-w-7xl mx-auto w-full">
@@ -83,20 +149,36 @@ function Home() {
 							<Sparkles data-icon="inline-start" />
 							Desktop v0.1
 						</Badge>
-						{!hasSampleData && (
+						{!hasAccounts && (
 							<Badge variant="outline" className="text-xs font-normal">
 								Clean Ledger
 							</Badge>
 						)}
 					</div>
 					<p className="text-sm text-muted-foreground">
-						{hasSampleData
+						{hasAccounts
 							? "Welcome back to your financial command center."
 							: "Your clean ledger is ready for new accounts and transactions."}
 					</p>
 				</div>
 
 				<div className="flex items-center gap-2.5">
+					{!hasAccounts && (
+						<Button
+							variant="outline"
+							size="sm"
+							disabled={isSeeding}
+							onClick={handleSeedSampleData}
+							className="cursor-pointer"
+						>
+							{isSeeding ? (
+								<Loader2 className="size-3.5 animate-spin" />
+							) : (
+								<Sparkles data-icon="inline-start" className="size-3.5" />
+							)}
+							Load Demo Data
+						</Button>
+					)}
 					<Button
 						variant="outline"
 						size="sm"
@@ -110,7 +192,7 @@ function Home() {
 						<SlidersHorizontal data-icon="inline-start" />
 						Filter
 					</Button>
-					<Button size="sm">
+					<Button size="sm" render={<Link to="/accounts" />}>
 						<Wallet data-icon="inline-start" />
 						Add Account
 					</Button>
@@ -128,17 +210,23 @@ function Home() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							{hasSampleData ? "$48,290.40" : "$0.00"}
+							{isLoading ? (
+								<span className="text-muted-foreground text-lg">
+									Loading...
+								</span>
+							) : (
+								formatCurrency(dashboardData?.totalBalanceCents ?? 0)
+							)}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
-							{hasSampleData ? (
+							{hasAccounts ? (
 								<>
 									<ArrowUpRight className="size-3.5 text-primary" />
 									<span className="font-medium text-foreground">+12.4%</span>
 									<span>from last month</span>
 								</>
 							) : (
-								<span>No transactions yet</span>
+								<span>No accounts yet</span>
 							)}
 						</div>
 					</CardContent>
@@ -153,10 +241,16 @@ function Home() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							{hasSampleData ? "$14,250.00" : "$0.00"}
+							{isLoading ? (
+								<span className="text-muted-foreground text-lg">
+									Loading...
+								</span>
+							) : (
+								formatCurrency(dashboardData?.monthlyInflowCents ?? 0)
+							)}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
-							{hasSampleData ? (
+							{hasAccounts ? (
 								<>
 									<ArrowUpRight className="size-3.5 text-primary" />
 									<span className="font-medium text-foreground">+4.2%</span>
@@ -178,10 +272,16 @@ function Home() {
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							{hasSampleData ? "$6,840.18" : "$0.00"}
+							{isLoading ? (
+								<span className="text-muted-foreground text-lg">
+									Loading...
+								</span>
+							) : (
+								formatCurrency(dashboardData?.monthlyOutflowCents ?? 0)
+							)}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
-							{hasSampleData ? (
+							{hasAccounts ? (
 								<>
 									<ArrowDownRight className="size-3.5 text-destructive" />
 									<span className="font-medium text-foreground">-2.1%</span>
@@ -196,18 +296,24 @@ function Home() {
 
 				<Card size="sm">
 					<CardHeader>
-						<CardDescription>Active Cards</CardDescription>
+						<CardDescription>Active Accounts</CardDescription>
 						<CardAction>
 							<CreditCard className="size-4 text-muted-foreground" />
 						</CardAction>
 					</CardHeader>
 					<CardContent className="flex flex-col gap-1">
 						<div className="text-2xl font-bold tracking-tight text-foreground">
-							{hasSampleData ? "4 Accounts" : "0 Accounts"}
+							{isLoading ? (
+								<span className="text-muted-foreground text-lg">
+									Loading...
+								</span>
+							) : (
+								`${dashboardData?.accounts.length ?? 0} Accounts`
+							)}
 						</div>
 						<div className="flex items-center gap-1 text-xs text-muted-foreground">
 							<Activity className="size-3.5 text-primary" />
-							<span>{hasSampleData ? "All synchronized" : "Ledger empty"}</span>
+							<span>{hasAccounts ? "All synchronized" : "Ledger empty"}</span>
 						</div>
 					</CardContent>
 				</Card>
@@ -244,42 +350,64 @@ function Home() {
 						</CardDescription>
 					</div>
 					<CardAction>
-						<Button variant="ghost" size="sm">
+						<Button
+							variant="ghost"
+							size="sm"
+							render={<Link to="/transactions" />}
+						>
 							View All
 						</Button>
 					</CardAction>
 				</CardHeader>
 
 				<CardContent className="p-0">
-					{hasSampleData ? (
+					{hasAccounts && recentTransactions.length > 0 ? (
 						<div className="divide-y divide-border">
-							{transactions.map((item) => (
-								<div
-									key={item.name}
-									className="flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-muted/40"
-								>
-									<div className="flex items-center gap-3">
-										<div className="size-8 rounded-lg flex items-center justify-center bg-muted text-muted-foreground">
-											{item.positive ? (
-												<ArrowUpRight className="size-4 text-primary" />
-											) : (
-												<ArrowDownRight className="size-4" />
-											)}
-										</div>
-										<div>
-											<div className="text-xs font-medium text-foreground">
-												{item.name}
+							{recentTransactions.map((item) => {
+								const isPositive = item.amountCents > 0;
+
+								return (
+									<div
+										key={item.id}
+										className="flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-muted/40"
+									>
+										<div className="flex items-center gap-3">
+											<div
+												className={`size-8 rounded-lg flex items-center justify-center ${
+													isPositive
+														? "bg-primary/10 text-primary"
+														: "bg-muted text-muted-foreground"
+												}`}
+											>
+												{isPositive ? (
+													<ArrowUpRight className="size-4 text-primary" />
+												) : (
+													<ArrowDownRight className="size-4" />
+												)}
 											</div>
-											<div className="text-[11px] text-muted-foreground">
-												{item.date} · {item.category}
+											<div>
+												<div className="text-xs font-medium text-foreground">
+													{item.merchant || item.description}
+												</div>
+												<div className="text-[11px] text-muted-foreground">
+													{formatDate(item.postedOn)}
+													{item.category ? ` · ${item.category.name}` : ""}
+												</div>
 											</div>
 										</div>
+										<Badge
+											variant={isPositive ? "secondary" : "outline"}
+											className={`text-xs font-medium tabular-nums ${
+												isPositive
+													? "text-primary border-primary/20 bg-primary/10"
+													: ""
+											}`}
+										>
+											{formatCurrency(item.amountCents)}
+										</Badge>
 									</div>
-									<Badge variant={item.positive ? "secondary" : "outline"}>
-										{item.amount}
-									</Badge>
-								</div>
-							))}
+								);
+							})}
 						</div>
 					) : (
 						<div className="flex flex-col items-center justify-center py-12 px-6 text-center gap-3">
@@ -292,11 +420,23 @@ function Home() {
 								</span>
 								<p className="text-xs text-muted-foreground">
 									Download a CSV from your bank and drag it into fin, or load
-									sample data from settings to explore the dashboard with
-									realistic numbers.
+									demo data to explore the dashboard with realistic numbers.
 								</p>
 							</div>
 							<div className="flex items-center gap-2 mt-2">
+								<Button
+									size="sm"
+									onClick={handleSeedSampleData}
+									disabled={isSeeding}
+									className="cursor-pointer"
+								>
+									{isSeeding ? (
+										<Loader2 className="size-3.5 animate-spin" />
+									) : (
+										<Sparkles data-icon="inline-start" className="size-3.5" />
+									)}
+									Load Demo Data
+								</Button>
 								<Button size="sm" variant="outline" className="cursor-pointer">
 									<FileSpreadsheet
 										data-icon="inline-start"
@@ -306,6 +446,7 @@ function Home() {
 								</Button>
 								<Button
 									size="sm"
+									variant="ghost"
 									render={<Link to="/settings" />}
 									className="cursor-pointer"
 								>

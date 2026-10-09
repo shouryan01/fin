@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 import { FinLogo } from "#/components/fin-logo";
+import { clearSampleData, seedSampleData } from "#/db";
 import {
 	getStoredOnboardingSettings,
 	useOnboardingSettings,
@@ -152,24 +154,50 @@ export function OnboardingModal() {
 		[leaving, isLaunching, step],
 	);
 
+	const queryClient = useQueryClient();
+
 	const finish = React.useCallback(() => {
 		if (isLaunching) return;
 		setIsLaunching(true);
+
+		// Synchronously start seeding/clearing in background while launch animation plays
+		const syncDbPromise = (async () => {
+			try {
+				if (settings.loadSampleData) {
+					await seedSampleData({ force: true });
+				} else {
+					await clearSampleData();
+				}
+				await queryClient.invalidateQueries();
+			} catch (err) {
+				console.error("[Onboarding] Failed to update sample data:", err);
+			}
+		})();
+
 		fadeTimer.current = setTimeout(() => {
 			setIsFadingOut(true);
 		}, 950);
-		launchTimer.current = setTimeout(() => {
+		launchTimer.current = setTimeout(async () => {
+			await syncDbPromise;
 			markCompleted(true);
 			setIsOpen(false);
 			setIsLaunching(false);
 			setIsFadingOut(false);
 		}, 1400);
-	}, [isLaunching, markCompleted]);
+	}, [isLaunching, settings.loadSampleData, queryClient, markCompleted]);
 
-	const handleSkip = React.useCallback(() => {
+	const handleSkip = React.useCallback(async () => {
+		try {
+			if (settings.loadSampleData) {
+				await seedSampleData();
+			}
+			await queryClient.invalidateQueries();
+		} catch (err) {
+			console.error("[Onboarding] Failed to seed sample data on skip:", err);
+		}
 		markCompleted(true);
 		setIsOpen(false);
-	}, [markCompleted]);
+	}, [settings.loadSampleData, queryClient, markCompleted]);
 
 	const next = React.useCallback(() => {
 		if (step < LAST_STEP) goTo(step + 1);
@@ -256,14 +284,7 @@ export function OnboardingModal() {
 					</div>
 
 					<div className="flex flex-col items-center gap-3 text-center animate-onb-rise">
-						<h2 className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
-							Welcome to fin
-						</h2>
-						<p className="text-sm text-muted-foreground">
-							Preparing your local financial command center…
-						</p>
-
-						<div className="relative h-1 w-48 overflow-hidden rounded-full bg-foreground/10 mt-2">
+						<div className="relative h-1 w-48 overflow-hidden rounded-full bg-foreground/10">
 							<div
 								className="h-full w-24 rounded-full animate-onb-shimmer"
 								style={{ backgroundColor: accent }}
