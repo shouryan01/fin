@@ -12,6 +12,12 @@ pub fn run() {
       sql: include_str!("../migrations/0001_initial.sql"),
       kind: MigrationKind::Up,
     },
+    Migration {
+      version: 2,
+      description: "add_indexes",
+      sql: include_str!("../migrations/0002_add_indexes.sql"),
+      kind: MigrationKind::Up,
+    },
   ];
 
   tauri::Builder::default()

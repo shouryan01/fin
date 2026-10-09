@@ -1,4 +1,6 @@
 -- Initial database schema for Fin
+PRAGMA foreign_keys = ON;
+PRAGMA journal_mode = WAL;
 
 CREATE TABLE IF NOT EXISTS `accounts` (
     `id` text PRIMARY KEY NOT NULL,
@@ -49,8 +51,6 @@ CREATE TABLE IF NOT EXISTS `transaction_imports` (
     FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS `transaction_imports_account_id_idx` ON `transaction_imports` (`account_id`);
-
 CREATE TABLE IF NOT EXISTS `transaction_import_mappings` (
     `id` text PRIMARY KEY NOT NULL,
     `account_id` text NOT NULL,
@@ -60,8 +60,6 @@ CREATE TABLE IF NOT EXISTS `transaction_import_mappings` (
     FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS `transaction_import_mappings_account_id_idx` ON `transaction_import_mappings` (`account_id`);
-
 CREATE TABLE IF NOT EXISTS `transaction_rules` (
     `id` text PRIMARY KEY NOT NULL,
     `merchant_pattern` text NOT NULL,
@@ -70,8 +68,6 @@ CREATE TABLE IF NOT EXISTS `transaction_rules` (
     `created_at` integer DEFAULT (unixepoch()) NOT NULL,
     FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
 );
-
-CREATE INDEX IF NOT EXISTS `transaction_rules_category_id_idx` ON `transaction_rules` (`category_id`);
 
 CREATE TABLE IF NOT EXISTS `transactions` (
     `id` text PRIMARY KEY NOT NULL,
@@ -95,8 +91,4 @@ CREATE TABLE IF NOT EXISTS `transactions` (
     FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL
 );
 
-CREATE INDEX IF NOT EXISTS `transactions_account_id_idx` ON `transactions` (`account_id`);
-CREATE INDEX IF NOT EXISTS `transactions_category_id_idx` ON `transactions` (`category_id`);
-CREATE INDEX IF NOT EXISTS `transactions_import_id_idx` ON `transactions` (`import_id`);
-CREATE INDEX IF NOT EXISTS `transactions_posted_on_idx` ON `transactions` (`posted_on`);
 CREATE UNIQUE INDEX IF NOT EXISTS `transactions_external_hash_idx` ON `transactions` (`external_hash`);
